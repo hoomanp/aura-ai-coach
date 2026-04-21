@@ -60,4 +60,39 @@ export class HealthAIEngine {
     const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
     return history.filter(t => t.timestamp > twentyFourHoursAgo);
   }
+
+  /**
+   * Stub chat response engine for demo mode.
+   * Pattern-matches keywords in the patient's message and returns
+   * contextual responses using current telemetry values.
+   */
+  static getChatResponse(message: string, telemetry: CardiacTelemetry): string {
+    const msg = message.toLowerCase();
+
+    if (msg.includes('pacing') || msg.includes('pacemaker')) {
+      return `Your pacemaker is currently pacing ${telemetry.pacingPercentage}% of your heartbeats. This means your heart is doing most of the work on its own — that is a great sign.`;
+    }
+    if (msg.includes('fluid') || msg.includes('impedance')) {
+      const isNormal = telemetry.thoracicImpedance >= 110;
+      return isNormal
+        ? `Your fluid levels look normal at ${telemetry.thoracicImpedance}\u03A9. No signs of fluid buildup today.`
+        : `Your fluid levels are slightly elevated at ${telemetry.thoracicImpedance}\u03A9. Consider resting and reducing sodium intake today.`;
+    }
+    if (msg.includes('heart rate') || msg.includes('bpm')) {
+      return `Your current heart rate is ${telemetry.heartRate} BPM, which is within your programmed safe zone. Your device is monitoring every beat.`;
+    }
+    if (msg.includes('battery')) {
+      return `Your Abbott device battery status is: ${telemetry.batteryStatus}. No action needed at this time.`;
+    }
+    if (msg.includes('exercise') || msg.includes('walk') || msg.includes('activity')) {
+      if (telemetry.thoracicImpedance < 110) {
+        return 'Your fluid levels are slightly elevated today. Light stretching is fine, but hold off on cardio and rest up.';
+      }
+      if (telemetry.pacingPercentage > 95) {
+        return 'Your pacemaker is working hard today. Stick to gentle stretches and deep breathing — skip the cardio.';
+      }
+      return `Your heart rate is at ${telemetry.heartRate} BPM and comfortably within your safe zone. You are clear for a 20-minute walk today.`;
+    }
+    return "That's a great question. I'll flag this for your care team at your next Merlin.net sync.";
+  }
 }
