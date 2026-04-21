@@ -20,3 +20,10 @@ export interface UserHealthProfile {
   baselineHRV: number;
   dailyStepGoal: number;
 }
+
+export interface ChatMessage {
+  id: string;
+  sender: 'user' | 'ai';
+  text: string;
+  timestamp: string;
+}
