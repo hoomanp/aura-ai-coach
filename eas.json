@@ -1,0 +1,27 @@
+{
+  "build": {
+    "test-drive": {
+      "android": {
+        "buildType": "apk"
+      },
+      "ios": {
+        "buildType": "app"
+      }
+    },
+    "preview": {
+      "android": {
+        "buildType": "apk"
+      },
+      "ios": {
+        "simulator": true
+      }
+    },
+    "production": {
+      "autoIncrement": true,
+      "node": "18.18.0"
+    }
+  },
+  "submit": {
+    "production": {}
+  }
+}

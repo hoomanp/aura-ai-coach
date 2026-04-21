@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "aura-ai-coach",
+    "name": "Aura AI Coach",
     "slug": "aura-ai-coach",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -9,22 +9,47 @@
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#00A9E0"
     },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.abbott.crm.aura",
+      "buildNumber": "1.0.0",
+      "infoPlist": {
+        "NSBluetoothAlwaysUsageDescription": "Aura AI requires Bluetooth access to securely sync with your Abbott® CRM device for real-time heart health monitoring.",
+        "NSBluetoothPeripheralUsageDescription": "Aura AI uses Bluetooth to communicate with your implanted device.",
+        "NSHealthShareUsageDescription": "Aura AI integrates with health data to provide personalized activity coaching.",
+        "NSHealthUpdateUsageDescription": "Aura AI updates your activity metrics based on your cardiac performance."
+      }
     },
     "android": {
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/android-icon-foreground.png",
-        "backgroundImage": "./assets/android-icon-background.png",
-        "monochromeImage": "./assets/android-icon-monochrome.png"
+        "backgroundColor": "#00A9E0"
       },
-      "predictiveBackGestureEnabled": false
+      "package": "com.abbott.crm.aura",
+      "versionCode": 1,
+      "permissions": [
+        "BLUETOOTH",
+        "BLUETOOTH_ADMIN",
+        "BLUETOOTH_SCAN",
+        "BLUETOOTH_CONNECT",
+        "ACCESS_FINE_LOCATION",
+        "android.permission.health.READ_HEART_RATE",
+        "android.permission.health.READ_STEPS",
+        "android.permission.health.READ_SLEEP"
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "aura-ai-abbott-project"
+      }
     }
   }
 }
