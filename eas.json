@@ -1,5 +1,14 @@
 {
   "build": {
+    "demo": {
+      "distribution": "internal",
+      "ios": {
+        "simulator": false
+      },
+      "env": {
+        "APP_ENV": "demo"
+      }
+    },
     "test-drive": {
       "android": {
         "buildType": "apk"

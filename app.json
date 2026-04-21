@@ -16,13 +16,16 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.abbott.crm.aura",
+      "bundleIdentifier": "com.abbott.aura-ai-coach",
       "buildNumber": "1.0.0",
       "infoPlist": {
         "NSBluetoothAlwaysUsageDescription": "Aura AI requires Bluetooth access to securely sync with your Abbott® CRM device for real-time heart health monitoring.",
         "NSBluetoothPeripheralUsageDescription": "Aura AI uses Bluetooth to communicate with your implanted device.",
         "NSHealthShareUsageDescription": "Aura AI integrates with health data to provide personalized activity coaching.",
         "NSHealthUpdateUsageDescription": "Aura AI updates your activity metrics based on your cardiac performance."
+      },
+      "entitlements": {
+        "com.apple.developer.healthkit": true
       }
     },
     "android": {
