@@ -12,6 +12,7 @@ export class StubDataService {
   }
 
   static getDemoState(): DemoState {
+    const { pacingPercentage } = StubDataService.getCurrentTelemetry();
     return {
       isConnected: true,
       skipConsent: true,
@@ -19,7 +20,7 @@ export class StubDataService {
         {
           id: 'demo-1',
           sender: 'ai',
-          text: 'Good morning, Robert! Your heart readings look great today. Your pacing is at 12.5% and fluid levels are normal.',
+          text: `Good morning, Robert! Your heart readings look great today. Your pacing is at ${pacingPercentage}% and fluid levels are normal.`,
           timestamp: new Date(Date.now() - 300000).toISOString(),
         },
         {

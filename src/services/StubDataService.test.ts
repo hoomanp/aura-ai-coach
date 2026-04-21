@@ -32,9 +32,10 @@ describe('StubDataService', () => {
     });
 
     it('returns deterministic results across calls', () => {
-      const first = StubDataService.generateHistory().map(t => t.heartRate);
-      const second = StubDataService.generateHistory().map(t => t.heartRate);
-      expect(first).toEqual(second);
+      const first = StubDataService.generateHistory();
+      const second = StubDataService.generateHistory();
+      expect(first.map(t => t.heartRate)).toEqual(second.map(t => t.heartRate));
+      expect(first.map(t => t.timestamp.slice(0, 10))).toEqual(second.map(t => t.timestamp.slice(0, 10)));
     });
 
     it('returns entries sorted oldest to newest', () => {
