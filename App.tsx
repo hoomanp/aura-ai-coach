@@ -25,8 +25,8 @@ export default function App() {
   return (
     <NavigationContainer>
       <Tab.Navigator
-        screenOptions={({ route }) => ({
-          tabBarIcon: ({ color, size }) => (
+        screenOptions={({ route }: { route: { name: keyof RootTabParamList } }) => ({
+          tabBarIcon: ({ color, size }: { color: string; size: number }) => (
             <Ionicons name={TAB_ICONS[route.name]} size={size} color={color} />
           ),
           tabBarActiveTintColor: Colors.primary,

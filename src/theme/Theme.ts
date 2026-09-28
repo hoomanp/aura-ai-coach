@@ -12,12 +12,13 @@ export const Colors = {
 };
 
 export const LegalStrings = {
-  trademarkNotice: 'Abbott®, Merlin.net™, and myMerlinPulse™ are trademarks of the Abbott Group of Companies.',
-  disclaimer: 'Aura AI is an experimental wellness coach and is not intended for the diagnosis or treatment of any medical condition. Always consult with your healthcare professional regarding your heart health.',
-  copyright: `© ${new Date().getFullYear()} Abbott. All rights reserved.`,
+  trademarkNotice: 'Abbott®, Merlin.net™, and myMerlinPulse™ are registered trademarks of Abbott Laboratories. This project is an independent open-source educational demonstration and is not affiliated with, endorsed by, or sponsored by Abbott.',
+  disclaimer: 'Aura AI is an experimental open-source wellness coach demonstration and is NOT intended for the diagnosis, cure, mitigation, treatment, or prevention of any disease or medical condition. Always consult with a licensed physician regarding your cardiac care.',
+  copyright: `© ${new Date().getFullYear()} Hooman Parta & Contributors. Released under the MIT License.`,
 };
 
 export const Spacing = {
+  xs: 4,
   s: 8,
   m: 16,
   l: 24,

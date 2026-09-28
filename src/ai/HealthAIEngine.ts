@@ -67,7 +67,21 @@ export class HealthAIEngine {
    * contextual responses using current telemetry values.
    */
   static getChatResponse(message: string, telemetry: CardiacTelemetry): string {
-    const msg = message.toLowerCase();
+    if (!message || typeof message !== 'string' || !message.trim()) {
+      return "Hello! I am Aura AI Coach. How can I help you understand your heart metrics today?";
+    }
+
+    const sanitizedMessage = message.slice(0, 500).trim();
+    const msg = sanitizedMessage.toLowerCase();
+
+    // Priority 0: Medical Emergency Guardrails
+    const emergencyKeywords = [
+      'chest pain', 'short of breath', 'shortness of breath', 'shock',
+      'faint', 'passed out', 'dizzy', 'dizziness', 'emergency', 'heart attack',
+    ];
+    if (emergencyKeywords.some(keyword => msg.includes(keyword))) {
+      return "EMERGENCY SAFETY ALERT: If you are experiencing chest pain, shortness of breath, dizziness, fainting, or an unexpected ICD shock, please call 911 (or your local emergency services) immediately. Aura AI Coach is an informational tool and cannot assist in medical emergencies.";
+    }
 
     if (msg.includes('pacing') || msg.includes('pacemaker')) {
       return `Your pacemaker is currently pacing ${telemetry.pacingPercentage}% of your heartbeats. This means your heart is doing most of the work on its own — that is a great sign.`;

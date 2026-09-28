@@ -16,7 +16,8 @@ const QUICK_REPLIES = [
   'Can I exercise today?',
 ];
 
-let msgCounter = 200;
+const createMsgId = (sender: string) =>
+  `${sender}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
 
 export function AICoachScreen() {
   const isDemo = StubDataService.isDemoMode();
@@ -35,7 +36,7 @@ export function AICoachScreen() {
     if (!trimmed) return;
 
     const userMsg: ChatMessage = {
-      id: String(++msgCounter),
+      id: createMsgId('user'),
       sender: 'user',
       text: trimmed,
       timestamp: new Date().toISOString(),
@@ -47,7 +48,7 @@ export function AICoachScreen() {
 
     setTimeout(() => {
       const aiMsg: ChatMessage = {
-        id: String(++msgCounter),
+        id: createMsgId('ai'),
         sender: 'ai',
         text: HealthAIEngine.getChatResponse(trimmed, currentTelemetry),
         timestamp: new Date().toISOString(),

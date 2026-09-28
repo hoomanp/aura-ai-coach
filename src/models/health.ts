@@ -27,3 +27,23 @@ export interface ChatMessage {
   text: string;
   timestamp: string;
 }
+
+export type AuthProvider = 'apple' | 'google' | 'demo';
+
+export interface UserAccount {
+  id: string;
+  email: string;
+  displayName: string;
+  provider: AuthProvider;
+  platform: 'ios' | 'android' | 'web';
+  healthPlatformConnected: boolean;
+  connectedAt?: string;
+}
+
+export interface PlatformHealthData {
+  steps: number;
+  heartRate: number;
+  source: 'Apple HealthKit' | 'Google Health Connect' | 'Simulated Platform';
+  syncedAt: string;
+}
+

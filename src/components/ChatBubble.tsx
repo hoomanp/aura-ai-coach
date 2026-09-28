@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import { Colors, Spacing, Typography } from '../theme/Theme';
+import { Colors, Spacing } from '../theme/Theme';
 import { ChatMessage } from '../models/health';
 
 interface ChatBubbleProps {

@@ -13,9 +13,7 @@
       "android": {
         "buildType": "apk"
       },
-      "ios": {
-        "buildType": "app"
-      }
+      "ios": {}
     },
     "preview": {
       "android": {
@@ -27,7 +25,7 @@
     },
     "production": {
       "autoIncrement": true,
-      "node": "18.18.0"
+      "node": "22.14.0"
     }
   },
   "submit": {

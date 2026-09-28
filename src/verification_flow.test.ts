@@ -10,6 +10,7 @@ describe('Application Logic Flow Verification', () => {
   test('Complete Sync Flow with Permissions', async () => {
     // 1. Bluetooth Permission Granted
     const blePermissionGranted = true;
+    expect(blePermissionGranted).toBe(true);
     
     // 2. Initial Sync
     const [latestTelemetry, params] = await Promise.all([

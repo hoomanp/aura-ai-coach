@@ -22,7 +22,8 @@
         "NSBluetoothAlwaysUsageDescription": "Aura AI requires Bluetooth access to securely sync with your Abbott® CRM device for real-time heart health monitoring.",
         "NSBluetoothPeripheralUsageDescription": "Aura AI uses Bluetooth to communicate with your implanted device.",
         "NSHealthShareUsageDescription": "Aura AI integrates with health data to provide personalized activity coaching.",
-        "NSHealthUpdateUsageDescription": "Aura AI updates your activity metrics based on your cardiac performance."
+        "NSHealthUpdateUsageDescription": "Aura AI updates your activity metrics based on your cardiac performance.",
+        "ITSAppUsesNonExemptEncryption": false
       },
       "entitlements": {
         "com.apple.developer.healthkit": true
@@ -51,8 +52,9 @@
     },
     "extra": {
       "eas": {
-        "projectId": "aura-ai-abbott-project"
+        "projectId": "f43c85eb-947b-4272-bd90-9834a8f8dcf4"
       }
-    }
+    },
+    "owner": "hoomanpartas-organization"
   }
 }

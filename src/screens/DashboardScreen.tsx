@@ -3,14 +3,19 @@ import {
   StyleSheet, Text, View, SafeAreaView, ActivityIndicator,
   TouchableOpacity, ScrollView, Platform,
 } from 'react-native';
+import Ionicons from '@expo/vector-icons/Ionicons';
 import { Colors, Spacing, Typography, LegalStrings } from '../theme/Theme';
 import { SecureMerlinNetService } from '../services/MerlinNetService';
 import { SecureBLEService } from '../services/BLEService';
 import { HealthPlatformService } from '../services/HealthPlatformService';
 import { HealthAIEngine } from '../ai/HealthAIEngine';
 import { ConsentModal } from '../components/ConsentModal';
+import { HealthAccountModal } from '../components/HealthAccountModal';
 import { StubDataService } from '../services/StubDataService';
-import { CardiacTelemetry, PacingParameters, UserHealthProfile } from '../models/health';
+import {
+  CardiacTelemetry, PacingParameters, UserHealthProfile,
+  UserAccount, PlatformHealthData,
+} from '../models/health';
 
 const PatientProfile: UserHealthProfile = {
   name: 'Robert J.',
@@ -29,7 +34,7 @@ export function DashboardScreen() {
   const [telemetry, setTelemetry] = useState<CardiacTelemetry | null>(demoTelemetry);
   const [pacingParams, setPacingParams] = useState<PacingParameters | null>(demoPacingParams);
   const [insight, setInsight] = useState(
-    isDemo ? HealthAIEngine.generateCoachingInsight(demoTelemetry!, PatientProfile) : ''
+    demoTelemetry ? HealthAIEngine.generateCoachingInsight(demoTelemetry, PatientProfile) : ''
   );
   const [healthAlert, setHealthAlert] = useState<string | null>(null);
   const [modalContent, setModalContent] = useState<{
@@ -37,8 +42,17 @@ export function DashboardScreen() {
     description: string;
     onAllow: () => void;
   } | null>(null);
+
+  // Authentication & Health Platform Sync State
+  const [userAccount, setUserAccount] = useState<UserAccount | null>(HealthPlatformService.getCurrentUser());
+  const [platformHealthData, setPlatformHealthData] = useState<PlatformHealthData | null>(null);
+  const [isAccountModalVisible, setIsAccountModalVisible] = useState(false);
+
   const [blePermissionGranted, setBlePermissionGranted] = useState(isDemo);
-  const [healthPermissionGranted, setHealthPermissionGranted] = useState(false);
+  const healthPermissionGranted = userAccount?.healthPlatformConnected ?? false;
+
+  const platformInfo = HealthPlatformService.getPlatformInfo();
+  const isIOS = Platform.OS === 'ios';
 
   const syncAura = useCallback(async () => {
     if (!blePermissionGranted) {
@@ -62,6 +76,7 @@ export function DashboardScreen() {
 
       if (healthPermissionGranted) {
         const platformData = await HealthPlatformService.getBaselineActivity();
+        setPlatformHealthData(platformData);
         const verificationAlert = HealthAIEngine.crossVerifyHeartRate(
           latestTelemetry.heartRate,
           platformData.heartRate,
@@ -90,17 +105,29 @@ export function DashboardScreen() {
     });
   };
 
-  const requestHealthPermission = () => {
-    setModalContent({
-      title: 'Connect Your Health Platforms',
-      description:
-        'Syncing with Apple Health allows Aura AI to cross-verify your heart data for enhanced safety and more accurate insights.',
-      onAllow: async () => {
-        setModalContent(null);
-        const granted = await HealthPlatformService.requestPermissions();
-        if (granted) setHealthPermissionGranted(true);
-      },
-    });
+  const handleOpenAccountModal = () => {
+    setIsAccountModalVisible(true);
+  };
+
+  const handleAccountLoginSuccess = async (account: UserAccount) => {
+    setUserAccount(account);
+    const data = await HealthPlatformService.getBaselineActivity();
+    setPlatformHealthData(data);
+
+    if (telemetry) {
+      const verificationAlert = HealthAIEngine.crossVerifyHeartRate(
+        telemetry.heartRate,
+        data.heartRate,
+      );
+      setHealthAlert(verificationAlert);
+    }
+  };
+
+  const handleDisconnectHealth = () => {
+    HealthPlatformService.disconnectHealthPlatform();
+    setUserAccount(prev => (prev ? { ...prev, healthPlatformConnected: false } : null));
+    setPlatformHealthData(null);
+    setHealthAlert(null);
   };
 
   useEffect(() => {
@@ -136,7 +163,7 @@ export function DashboardScreen() {
         <View style={styles.header}>
           <View>
             <Text style={Typography.caption}>Aura AI for Abbott\u00AE</Text>
-            <Text style={Typography.h1}>{PatientProfile.name}</Text>
+            <Text style={Typography.h1}>{userAccount?.displayName ?? PatientProfile.name}</Text>
           </View>
           <View style={styles.connectionBadgeContainer}>
             <View style={[styles.statusDot, { backgroundColor: isBleConnected ? Colors.success : Colors.danger }]} />
@@ -155,6 +182,7 @@ export function DashboardScreen() {
           </View>
         )}
 
+        {/* Live Telemetry Ring */}
         <View style={styles.auraRingContainer}>
           <View style={[styles.ringOuter, { borderColor: isBleConnected ? Colors.primary : Colors.textSecondary }]}>
             <Text style={styles.hrValue}>{telemetry.heartRate}</Text>
@@ -166,26 +194,14 @@ export function DashboardScreen() {
           </View>
         </View>
 
+        {/* AI Insight Card */}
         <View style={styles.insightCard}>
           <Text style={styles.insightTitle}>Aura AI Guidance</Text>
           <Text style={styles.insightBody}>{insight}</Text>
 
-          {!healthPermissionGranted ? (
-            <TouchableOpacity
-              style={[styles.actionButton, { backgroundColor: Colors.secondary, marginTop: Spacing.m }]}
-              onPress={requestHealthPermission}
-            >
-              <Text style={styles.actionButtonText}>Connect Apple Health & Google Health</Text>
-            </TouchableOpacity>
-          ) : (
-            <View style={styles.syncedBadge}>
-              <Text style={styles.syncedText}>Health Platforms Synced</Text>
-            </View>
-          )}
-
           {!isDemo && (
             <TouchableOpacity
-              style={[styles.actionButton, { backgroundColor: Colors.primary, marginTop: Spacing.s }]}
+              style={[styles.actionButton, { backgroundColor: Colors.primary, marginTop: Spacing.m }]}
               onPress={syncAura}
             >
               <Text style={styles.actionButtonText}>Sync myMerlinPulse\u2122 Device</Text>
@@ -193,6 +209,82 @@ export function DashboardScreen() {
           )}
         </View>
 
+        {/* Platform Health Integration & User Account Card */}
+        <View style={styles.healthIntegrationCard}>
+          <View style={styles.healthIntegrationHeader}>
+            <Ionicons
+              name={
+                userAccount?.provider === 'apple' || isIOS
+                  ? 'heart-circle'
+                  : 'fitness'
+              }
+              size={24}
+              color={Colors.primary}
+            />
+            <Text style={styles.healthIntegrationTitle}>
+              {platformInfo.serviceName}
+            </Text>
+          </View>
+
+          {userAccount && userAccount.healthPlatformConnected ? (
+            <View style={styles.connectedContainer}>
+              <View style={styles.accountRow}>
+                <Ionicons
+                  name={userAccount.provider === 'apple' ? 'logo-apple' : 'logo-google'}
+                  size={18}
+                  color={Colors.text}
+                />
+                <Text style={styles.accountEmail}>
+                  Logged in as {userAccount.email}
+                </Text>
+              </View>
+
+              <View style={styles.syncStatusRow}>
+                <View style={styles.syncedPill}>
+                  <Text style={styles.syncedPillText}>
+                    {userAccount.provider === 'apple' ? 'Apple Health Synced' : 'Health Connect Synced'}
+                  </Text>
+                </View>
+                {platformHealthData && (
+                  <Text style={styles.metricsSummary}>
+                    {platformHealthData.steps.toLocaleString()} steps • {platformHealthData.heartRate} BPM
+                  </Text>
+                )}
+              </View>
+
+              <TouchableOpacity style={styles.disconnectButton} onPress={handleDisconnectHealth}>
+                <Text style={styles.disconnectButtonText}>Disconnect Health Sync</Text>
+              </TouchableOpacity>
+            </View>
+          ) : (
+            <View style={styles.unconnectedContainer}>
+              <Text style={styles.healthIntegrationDescription}>
+                {isIOS
+                  ? `Sign in with your ${platformInfo.providerName} to enable bidirectional ${platformInfo.serviceName} sync and cross-verify your heart rate.`
+                  : `Sign in with your ${platformInfo.providerName} to connect ${platformInfo.serviceName} and verify CRM metrics against wearable data.`}
+              </Text>
+              <TouchableOpacity
+                style={[
+                  styles.connectButton,
+                  { backgroundColor: isIOS ? '#000' : Colors.primary },
+                ]}
+                onPress={handleOpenAccountModal}
+              >
+                <Ionicons
+                  name={isIOS ? 'logo-apple' : 'logo-google'}
+                  size={18}
+                  color="#FFF"
+                  style={{ marginRight: 8 }}
+                />
+                <Text style={styles.connectButtonText}>
+                  {isIOS ? 'Sign in with Apple to Connect' : 'Sign in with Google to Connect'}
+                </Text>
+              </TouchableOpacity>
+            </View>
+          )}
+        </View>
+
+        {/* Stats Grid */}
         <View style={styles.statsContainer}>
           <View style={styles.statBox}>
             <Text style={Typography.caption}>Pacing</Text>
@@ -208,6 +300,7 @@ export function DashboardScreen() {
           </View>
         </View>
 
+        {/* Footer & Legal Disclaimers */}
         <View style={styles.footer}>
           <Text style={styles.legalNotice}>{LegalStrings.trademarkNotice}</Text>
           <Text style={styles.disclaimerText}>{LegalStrings.disclaimer}</Text>
@@ -216,12 +309,20 @@ export function DashboardScreen() {
 
       </ScrollView>
 
+      {/* Permission Consent Modal */}
       <ConsentModal
         isVisible={!!modalContent}
         title={modalContent?.title ?? ''}
         description={modalContent?.description ?? ''}
         onAllow={() => modalContent?.onAllow()}
         onDeny={() => setModalContent(null)}
+      />
+
+      {/* User Login & Health Authentication Modal */}
+      <HealthAccountModal
+        isVisible={isAccountModalVisible}
+        onClose={() => setIsAccountModalVisible(false)}
+        onSuccess={handleAccountLoginSuccess}
       />
     </SafeAreaView>
   );
@@ -252,7 +353,7 @@ const styles = StyleSheet.create({
   zoneGuide: { marginTop: Spacing.m, backgroundColor: '#F1F3F5', paddingHorizontal: Spacing.m, paddingVertical: Spacing.s, borderRadius: 12 },
   zoneText: { color: Colors.textSecondary, fontSize: 13, fontWeight: '600' },
   insightCard: {
-    backgroundColor: Colors.card, borderRadius: 16, padding: Spacing.l, marginBottom: Spacing.xl,
+    backgroundColor: Colors.card, borderRadius: 16, padding: Spacing.l, marginBottom: Spacing.l,
     elevation: 2, shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.1, shadowRadius: 2,
     borderLeftWidth: 6, borderLeftColor: Colors.primary,
   },
@@ -265,9 +366,96 @@ const styles = StyleSheet.create({
   },
   alertText: { color: '#856404', fontSize: 13, flex: 1, marginRight: Spacing.s },
   alertClose: { color: '#856404', fontWeight: 'bold', fontSize: 12 },
-  syncedBadge: { backgroundColor: '#E8F5E9', padding: Spacing.s, borderRadius: 8, marginTop: Spacing.m, alignItems: 'center' },
-  syncedText: { color: Colors.success, fontWeight: '600', fontSize: 12 },
-  actionButton: { marginTop: Spacing.m, paddingVertical: Spacing.m, borderRadius: 8, alignItems: 'center' },
+  healthIntegrationCard: {
+    backgroundColor: Colors.card,
+    borderRadius: 16,
+    padding: Spacing.m,
+    marginBottom: Spacing.xl,
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.08,
+    shadowRadius: 2,
+    borderWidth: 1,
+    borderColor: '#E8ECEF',
+  },
+  healthIntegrationHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginBottom: Spacing.s,
+  },
+  healthIntegrationTitle: {
+    ...Typography.h2,
+    fontSize: 16,
+    color: Colors.text,
+  },
+  healthIntegrationDescription: {
+    ...Typography.caption,
+    lineHeight: 18,
+    marginBottom: Spacing.m,
+  },
+  connectedContainer: {
+    gap: Spacing.s,
+  },
+  accountRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  accountEmail: {
+    fontSize: 13,
+    color: Colors.text,
+    fontWeight: '500',
+  },
+  syncStatusRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginTop: 4,
+  },
+  syncedPill: {
+    backgroundColor: '#E8F5E9',
+    paddingHorizontal: Spacing.s,
+    paddingVertical: 4,
+    borderRadius: 6,
+  },
+  syncedPillText: {
+    color: Colors.success,
+    fontSize: 11,
+    fontWeight: '600',
+  },
+  metricsSummary: {
+    fontSize: 12,
+    color: Colors.textSecondary,
+    fontWeight: '500',
+  },
+  disconnectButton: {
+    alignSelf: 'flex-start',
+    marginTop: 4,
+  },
+  disconnectButtonText: {
+    color: Colors.danger,
+    fontSize: 12,
+    fontWeight: '600',
+  },
+  unconnectedContainer: {
+    gap: Spacing.xs,
+  },
+  connectButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 12,
+    borderRadius: 10,
+    marginTop: Spacing.s,
+  },
+  connectButtonText: {
+    color: '#FFF',
+    fontWeight: 'bold',
+    fontSize: 13,
+  },
+  actionButton: { paddingVertical: Spacing.m, borderRadius: 8, alignItems: 'center' },
   actionButtonText: { color: '#FFF', fontWeight: 'bold' },
   statsContainer: { flexDirection: 'row', justifyContent: 'space-around', marginBottom: Spacing.xl },
   statBox: { backgroundColor: Colors.card, width: '30%', padding: Spacing.m, borderRadius: 12, alignItems: 'center', borderWidth: 1, borderColor: '#EEE' },

@@ -11,7 +11,8 @@ export class SecureMerlinNetService {
    */
   static async getLatestTelemetry(patientId: string): Promise<CardiacTelemetry> {
     // 1. Sanitize Patient ID (Preventing injection or ID scraping)
-    const sanitizedId = patientId.replace(/[^a-zA-Z0-9-]/g, '');
+    const sanitizedId = patientId ? patientId.replace(/[^a-zA-Z0-9-]/g, '') : 'ANONYMOUS';
+    if (__DEV__) console.log(`[MerlinNet] Fetching telemetry for patient: ${sanitizedId}`);
 
     // 2. Simulated secure API call (Enforced HTTPS TLS 1.3)
     return new Promise((resolve) => {
@@ -39,6 +40,9 @@ export class SecureMerlinNetService {
   }
 
   static async getPacingParameters(patientId: string): Promise<PacingParameters> {
+    const sanitizedId = patientId ? patientId.replace(/[^a-zA-Z0-9-]/g, '') : 'ANONYMOUS';
+    if (__DEV__) console.log(`[MerlinNet] Fetching pacing parameters for patient: ${sanitizedId}`);
+
     return new Promise((resolve) => {
       setTimeout(() => {
         resolve({
