@@ -17,7 +17,8 @@
     "test:watch": "jest --watch",
     "test:coverage": "jest --runInBand --no-watchman --coverage",
     "typecheck": "tsc --noEmit",
-    "lint": "eslint src App.tsx"
+    "lint": "eslint src App.tsx",
+    "mcp:server": "ts-node src/mcp/server-cli.ts"
   },
   "dependencies": {
     "@expo/vector-icons": "^15.1.1",

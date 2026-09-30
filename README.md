@@ -4,8 +4,9 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![CI & Quality Gate](https://github.com/hoomanp/aura-ai-coach/actions/workflows/ci.yml/badge.svg)](.github/workflows/ci.yml)
-[![Tests: 107/107 Passing](https://img.shields.io/badge/Tests-107%2F107%20Passing-brightgreen.svg)](https://github.com/hoomanp/aura-ai-coach)
-[![Test Suites: 19/19](https://img.shields.io/badge/Test%20Suites-19%2F19%20Passing-brightgreen.svg)](https://github.com/hoomanp/aura-ai-coach)
+[![Tests: 130/130 Passing](https://img.shields.io/badge/Tests-130%2F130%20Passing-brightgreen.svg)](https://github.com/hoomanp/aura-ai-coach)
+[![Test Suites: 21/21](https://img.shields.io/badge/Test%20Suites-21%2F21%20Passing-brightgreen.svg)](https://github.com/hoomanp/aura-ai-coach)
+[![MCP: 2024-11-05](https://img.shields.io/badge/MCP-Server%20%26%20Client-blueviolet.svg)](https://modelcontextprotocol.io)
 [![Coverage: 98% Services | 95% AI](https://img.shields.io/badge/Coverage-98%25%20Services-brightgreen.svg)](https://github.com/hoomanp/aura-ai-coach)
 [![Vulnerabilities: 0](https://img.shields.io/badge/Vulnerabilities-0-brightgreen.svg)](https://github.com/hoomanp/aura-ai-coach)
 [![TypeScript: Strict](https://img.shields.io/badge/TypeScript-Strict-blue.svg)](tsconfig.json)
@@ -169,6 +170,74 @@ flowchart TD
 
 ---
 
+## 🔌 Model Context Protocol (MCP) Architecture
+
+Aura AI Coach natively adopts the open [Model Context Protocol (MCP)](https://modelcontextprotocol.io) (spec version `2024-11-05`), operating simultaneously as an **MCP Server** and an **MCP Client**. This enables bidirectional interoperability with external clinical systems, AI developer environments, and hospital EHR infrastructure:
+
+```
+┌─────────────────────────────────────────────────────────────────────────────────┐
+│                          Aura AI Coach Ecosystem                                │
+│                                                                                 │
+│   ┌───────────────────────────────────┐     ┌───────────────────────────────┐   │
+│   │          Aura MCP Server          │     │        Aura MCP Client        │   │
+│   │    (JSON-RPC 2.0 / Stdio & Web)   │     │ (Pure TS / HTTP & In-Memory)  │   │
+│   └─────────────────▲─────────────────┘     └───────────────┬───────────────┘   │
+└─────────────────────┼───────────────────────────────────────┼───────────────────┘
+                      │                                       │
+      ┌───────────────┴───────────────┐       ┌───────────────▼───────────────┐
+      │  External MCP Clients / IDEs  │       │  External MCP Servers / APIs  │
+      │  · Claude Desktop             │       │  · Hospital EHR Systems (FHIR)│
+      │  · Cursor IDE                 │       │  · Cardiology Clinic Backends │
+      │  · Clinical AI Assistants     │       │  · Rx Adherence & Weather API │
+      └───────────────────────────────┘       └───────────────────────────────┘
+```
+
+### 1. Aura MCP Server (`src/mcp/AuraMCPServer.ts`)
+Exposes safe, read-only cardiac telemetry, device pacing bounds, and clinical AI coaching heuristics via standard JSON-RPC 2.0:
+
+#### Registered Tools (`tools/list`)
+- `aura_get_telemetry`: Fetches sanitized real-time or remote CRM telemetry (heart rate, pacing burden %, thoracic fluid impedance, battery health).
+- `aura_get_pacing_parameters`: Retrieves programmed clinical device limits (Lower Rate Limit, Upper Sensor Rate, sensitivity thresholds).
+- `aura_calculate_safe_zone`: Calculates dynamic aerobic heart rate boundaries and checks whether current heart rate is within safe zones.
+- `aura_coach_query`: Evaluates patient lifestyle queries with automatic **Priority 0 Emergency Triage** (acute chest pain, syncope, or ICD shocks immediately trigger 911 emergency referral).
+- `aura_wearable_sync`: Synchronizes Apple HealthKit or Google Health Connect wearable metrics against device boundaries.
+
+#### Registered Resources (`resources/list`)
+- `aura://telemetry/current`: Real-time snapshot of cardiac telemetry in JSON format.
+- `aura://patient/profile`: Sanity-checked patient profile (anonymized patient ID, device model, clinical indications).
+- `aura://clinical/guidelines`: Standard ACC/AHA cardiac rehabilitation exercise limits and fluid decompensation thresholds.
+
+#### Registered Prompts (`prompts/list`)
+- `cardiac_wellness_review`: Clinical template for daily physiological review and safe zone validation.
+- `emergency_symptom_triage`: Structured workflow to assess acute cardiac symptoms against emergency triage criteria.
+
+#### Running Aura MCP Server with Claude Desktop or Cursor
+A stdio CLI transport runner is provided at `src/mcp/server-cli.ts`. To connect Claude Desktop to Aura AI Coach, add the following to your `claude_desktop_config.json`:
+
+```json
+{
+  "mcpServers": {
+    "aura-ai-coach": {
+      "command": "npm",
+      "args": ["run", "mcp:server"],
+      "cwd": "/path/to/aura-ai-coach"
+    }
+  }
+}
+```
+
+---
+
+### 2. Aura MCP Client (`src/services/MCPClientService.ts`)
+Enables the Aura AI Coach platform and mobile companion to connect outward to external clinical MCP servers:
+- **Cardiology Clinic MCP Servers:** Query scheduled clinic follow-up visits and device programmer notes.
+- **Hospital EHR Gateways:** Securely exchange FHIR Observation records.
+- **Medication / Pharmacy Servers:** Cross-reference antiarrhythmic prescriptions with diurnal heart rate trends.
+- **Environmental Alert Servers:** Ingest air quality, extreme heat, or altitude warnings to dynamically throttle aerobic safe zones.
+- **Mobile-Safe Design:** Built with pure TypeScript JSON-RPC 2.0 and native `fetch`—**zero Node-specific runtime dependencies**, ensuring 100% compatibility with Expo and React Native. Supports both HTTP transport (with Bearer authorization) and in-memory transport for testing.
+
+---
+
 ## 🧪 TDD Architecture & Verification Suite
 
 As part of the **TDD Architect & CRM Subject Matter Expert (SME)** verification framework, **every single feature, component, screen, and service across the codebase is covered by at least 1 dedicated test suite**:
@@ -180,7 +249,7 @@ npm run typecheck
 # 2. Linting: Verify ESLint 9 flat rules and code standards (0 errors, 0 warnings)
 npm run lint
 
-# 3. Unit & Integration Tests: Run all 107 tests across 19 test suites
+# 3. Unit & Integration Tests: Run all 130 tests across 21 test suites
 npm test
 
 # 4. Test Coverage: Generate coverage reports
@@ -209,8 +278,10 @@ npm run test:coverage
 | **Services** | End-to-End Integration | [`src/verification_flow.test.ts`](src/verification_flow.test.ts) | 2 | Full patient onboarding, BLE handshake, multi-source sync |
 | **AI** | Emergency Clinical Triage | [`src/ai/HealthAIEngine.emergency.test.ts`](src/ai/HealthAIEngine.emergency.test.ts) | 11 | Priority 0 symptom keywords (chest pain, shock, syncope) -> 911 |
 | **AI** | Clinical Heuristics Engine | [`src/ai/HealthAIEngine.test.ts`](src/ai/HealthAIEngine.test.ts) | 14 | Safe zones, fluid alerts, coaching insights, 24h data pruning |
+| **MCP** | Aura MCP Server | [`src/mcp/AuraMCPServer.test.ts`](src/mcp/AuraMCPServer.test.ts) | 9 | Protocol handshake (2024-11-05), tools, resources, prompts, emergency triage |
+| **MCP** | Aura MCP Client | [`src/services/MCPClientService.test.ts`](src/services/MCPClientService.test.ts) | 14 | Connect, HTTP & in-memory transports, tool invocation, session lifecycle |
 | **Design** | Design System & Disclaimers | [`src/theme/Theme.test.ts`](src/theme/Theme.test.ts) | 4 | Colors, 4pt spacing scale, typography, legal disclaimers |
-| **Total** | **Full Repository Coverage** | **19 Test Suites** | **107** | **100% Feature Coverage across All Modules** |
+| **Total** | **Full Repository Coverage** | **21 Test Suites** | **130** | **100% Feature Coverage across All Modules** |
 
 ---
 
@@ -307,6 +378,11 @@ aura-ai-coach/
 │   │   ├── ReminderCard.test.ts          # Reminder card unit tests
 │   │   ├── TrendChart.tsx                # Reusable SVG telemetry chart wrapper
 │   │   └── TrendChart.test.ts            # TrendChart unit tests
+│   ├── mcp/
+│   │   ├── types.ts                      # MCP 2024-11-05 & JSON-RPC 2.0 type definitions
+│   │   ├── AuraMCPServer.ts              # Cardiac MCP Server (5 tools, 3 resources, 2 prompts)
+│   │   ├── AuraMCPServer.test.ts         # MCP Server unit test suite (9 tests)
+│   │   └── server-cli.ts                 # Stdio CLI runner for Claude Desktop & Cursor
 │   ├── models/
 │   │   └── health.ts            # Type definitions: Telemetry, Pacing, UserAccount
 │   ├── screens/
@@ -321,6 +397,8 @@ aura-ai-coach/
 │   │   ├── BLEService.test.ts            # BLE service unit tests
 │   │   ├── HealthPlatformService.ts      # HealthKit / Health Connect gateway
 │   │   ├── HealthPlatformService.test.ts # Health platform auth & permission tests
+│   │   ├── MCPClientService.ts           # Production-grade MCP Client (HTTP & in-memory)
+│   │   ├── MCPClientService.test.ts      # MCP Client unit test suite (14 tests)
 │   │   ├── MerlinNetService.ts           # Sanitized remote telemetry gateway
 │   │   ├── MerlinNetService.test.ts      # MerlinNet service unit tests
 │   │   ├── StubDataService.ts            # Deterministic God Mode test data
