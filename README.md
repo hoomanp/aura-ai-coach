@@ -169,7 +169,7 @@ flowchart TD
 
 ---
 
-## 🧪 TDD Architecture & Staff STE Verification Suite
+## 🧪 TDD Architecture & Verification Suite
 
 As part of the **TDD Architect & CRM Subject Matter Expert (SME)** verification framework, **every single feature, component, screen, and service across the codebase is covered by at least 1 dedicated test suite**:
 
@@ -362,7 +362,7 @@ aura-ai-coach/
 ## 👨‍💻 Author & Engineering Leadership
 
 **Architected & Engineered by [Hooman Parta](https://github.com/hoomanp)**  
-*Staff Software Test Engineer & MedTech Systems Architect*
+*Software Architect*
 
 > *"Building software for medical devices requires a different standard of engineering. It demands that testability, zero-trust security, and clinical hazard controls be designed into the foundational architecture—not bolted on after the fact. Aura AI Coach is a testament to how modern consumer mobile technologies can meet clinical-grade quality standards."*
 
