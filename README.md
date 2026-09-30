@@ -1,5 +1,7 @@
 # Aura AI Coach 🫀
 
+> **Enterprise Reference Architecture for Next-Generation Implantable Cardiac Rhythm Management (CRM) Mobile Companion Platforms**
+
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![CI & Quality Gate](https://github.com/hoomanp/aura-ai-coach/actions/workflows/ci.yml/badge.svg)](.github/workflows/ci.yml)
 [![Tests: 107/107 Passing](https://img.shields.io/badge/Tests-107%2F107%20Passing-brightgreen.svg)](https://github.com/hoomanp/aura-ai-coach)
@@ -10,13 +12,37 @@
 [![Expo: SDK 55](https://img.shields.io/badge/Expo-SDK%2055-black.svg)](https://expo.dev)
 [![React Native: 0.83](https://img.shields.io/badge/React%20Native-0.83.2-61dafb.svg)](https://reactnative.dev)
 
-**Aura AI Coach** is an open-source, production-grade Expo / React Native mobile application demonstrating an intelligent, context-aware cardiac wellness coaching architecture for individuals with implanted Cardiac Rhythm Management (CRM) devices (pacemakers, implantable cardioverter-defibrillators [ICDs], and cardiac resynchronization therapy [CRT] devices).
+---
 
-The application synchronizes simulated telemetry data via Bluetooth Low Energy (BLE) and Merlin.net-style remote gateways, delivering personalized wellness insights, safe target heart-rate intensity zones, thoracic impedance (fluid accumulation) monitoring, medication reminders, and trend analytics directly on device.
+## 🧭 Executive Summary & Clinical North Star
+
+More than **3 million individuals worldwide live with implanted Cardiac Rhythm Management (CRM) devices**—including dual-chamber pacemakers, implantable cardioverter-defibrillators (ICDs), and cardiac resynchronization therapy (CRT-D) systems. 
+
+While clinical remote monitoring gateways (such as Abbott® Merlin.net™) reliably transmit scheduled transmissions every 30 to 90 days, **patients live in the 89-day gap between transmissions**. In this gap, patients face significant uncertainty:
+- *"Is it safe for me to go for a brisk walk today?"*
+- *"Why is my resting heart rate elevated this morning?"*
+- *"Am I retaining fluid, or is this normal day-to-day fluctuation?"*
+
+Unmonitored heart failure decompensation (pulmonary fluid accumulation) is responsible for **over \$30 billion in annual avoidable hospitalizations** in the United States alone. 
+
+**Aura AI Coach** demonstrates an enterprise-grade, safety-first reference architecture that bridges clinical CRM telemetry with modern mobile health ecosystems (**Apple HealthKit** on iOS and **Google Health Connect** on Android). It cross-references device-programmed lower/upper pacing limits and thoracic fluid impedance with consumer wearable activity, empowering patients with daily target intensity guidance while enforcing strict clinical safety guardrails.
 
 > [!CAUTION]
-> **MEDICAL & REGULATORY DISCLAIMER:**
-> Aura AI Coach is an experimental open-source educational demonstration and research application. **It is NOT a Medical Device (Software as a Medical Device - SaMD) and is NOT intended for the diagnosis, cure, mitigation, treatment, or prevention of any medical condition or cardiac arrhythmia.** Always consult with a board-certified electrophysiologist or cardiologist. In case of an acute emergency (chest pain, shortness of breath, dizziness, or unexpected ICD shock), **immediately dial 911 or your local emergency services.** See [DISCLAIMER.md](DISCLAIMER.md) for full trademark and regulatory disclosures.
+> **REGULATORY & CLINICAL BOUNDARY STATEMENT:**
+> Aura AI Coach is an open-source educational demonstration and systems architecture reference. **It is NOT a Medical Device (Software as a Medical Device - SaMD) and is NOT intended for the diagnosis, cure, mitigation, treatment, or prevention of any medical condition or cardiac arrhythmia.** Always consult with a board-certified electrophysiologist or cardiologist. In case of acute cardiac distress (chest pain, shortness of breath, dizziness, or unexpected ICD shock), **immediately dial 911 or your local emergency response service.** See [DISCLAIMER.md](DISCLAIMER.md) for full trademark and regulatory disclosures.
+
+---
+
+## ⚖️ MedTech Governance & Standards Alignment
+
+Engineering software in the cardiac domain requires strict compliance with international medical device and digital health standards. Aura AI Coach is designed against four foundational governance pillars:
+
+| Standard / Framework | Regulatory Scope | Architectural Implementation in Aura AI Coach |
+| :--- | :--- | :--- |
+| **FDA FD&C Act §520(o) / General Wellness Policy** | Software Function Categorization | Functions strictly within the FDA General Wellness exemption boundary: encourages healthy lifestyle habits and safe exercise zones without diagnosing arrhythmias or prescribing therapeutics. |
+| **IEC 62304 Class A/B Principles** | Medical Device Software Lifecycle | Enforces absolute architectural decoupling between life-sustaining implantable device firmware and the mobile presentation layer. Telemetry inputs are strictly read-only and immutable. |
+| **ISO 14971 Risk Management** | Clinical Risk Analysis & Hazard Control | Implements **Priority 0 Emergency Triage** in the conversational AI engine: acute cardiac symptoms ("chest pain", "passed out", "shock") immediately override coaching heuristics to prompt 911 contact. |
+| **HIPAA Security Rule (45 CFR §164.312)** | Protected Health Information (PHI) Security | Implements a **Zero-Trust Ephemeral Memory Architecture**: patient telemetry is processed in-memory with automatic rolling 24-hour purge windows. Zero plaintext PHI is stored on disk or unencrypted cache. |
 
 ---
 
@@ -64,17 +90,44 @@ The application synchronizes simulated telemetry data via Bluetooth Low Energy (
 
 ---
 
-## 📱 Features & Capabilities
+## 📱 Product Showcase & Core Screen Workflows
 
-| Feature | Description |
-| :--- | :--- |
-| **Live Telemetry Dashboard** | Real-time cardiac telemetry metrics: heart rate, pacing percentage, thoracic impedance (fluid status), AFib burden, battery status, and daily AI coaching insight. |
-| **Apple Health & Health Connect** | Native health platform integration gated by **Apple ID** (iOS) and **Google Account** (Android) with verified consent and wearable cross-checks. |
-| **7-Day Trend History** | Visual telemetry charts powered by `victory-native` + `react-native-svg` tracking weekly heart rate averages, fluid impedance trends, and pacing burdens. |
-| **AI Coach & Emergency Triage** | Context-aware chat engine with a **Priority 0 clinical emergency detection layer** that immediately routes acute cardiac symptoms to 911 emergency services. |
-| **Safe Intensity Zone Ring** | Dynamic cardiovascular intensity zones recalculated based on the patient's device programmed lower and upper rate pacing limits. |
-| **Zero-Trust Permission Gate** | Interactive consent modals (`ConsentModal`, `HealthAccountModal`) protecting BLE connections and external health data repositories. |
-| **God Mode (QA Simulation)** | Deterministic test state (`StubDataService`) enabling complete UI/UX evaluation and regression testing without physical CRM hardware. |
+Aura AI Coach is structured around three dedicated workflows designed for cardiac patient clarity and clinical safety:
+
+```
+┌───────────────────────────┐  ┌───────────────────────────┐  ┌───────────────────────────┐
+│      1. DASHBOARD         │  │       2. HISTORY          │  │       3. AI COACH         │
+│ ┌───────────────────────┐ │  │ ┌───────────────────────┐ │  │ ┌───────────────────────┐ │
+│ │ Robert J.  [CRT-D™]   │ │  │ │ 7-Day History         │ │  │ │ Aura AI Coach          │ │
+│ │ ● BLE Secured Live    │ │  │ │ Abbott® CRM Telemetry │ │  │ │ Care Team Companion    │ │
+│ └───────────────────────┘ │  │ └───────────────────────┘ │  │ └───────────────────────┘ │
+│                           │  │                           │  │                           │
+│     ╭───────────────╮     │  │  [Heart Rate Trend]       │  │  [Care Reminders Card]    │
+│    │     75 BPM      │    │  │   Avg 73 BPM (Line)       │  │   ✓ Device Check Appt     │
+│    │ Within Safe Zone│    │  │                           │  │   ✓ Merlin Nightly Sync   │
+│     ╰───────────────╯     │  │  [Pacing Burden %]        │  │                           │
+│  LRL: 60 BPM  USR: 140 BPM│  │   Avg 12.5% (Area)        │  │  [AI]: Fluid impedance    │
+│                           │  │                           │  │  is stable at 125Ω. You   │
+│ [Aura AI Guidance]        │  │  [AFib Burden %]          │  │  are cleared for a 20-min │
+│ Impedance is stable (125Ω)│  │   Threshold Alert (Bar)   │  │  walk in Zone 1.          │
+│ Pacing at 12.5% burden.   │  │                           │  │                           │
+│                           │  │                           │  │  [You]: Can I exercise?   │
+│ [Apple Health / Connect]  │  │                           │  │                           │
+│ Synced: 4,500 Steps       │  │                           │  │  [Quick Reply Chips]      │
+│                           │  │                           │  │  [Pacing?] [Fluid?] [Walk]│
+│ [Pacing]  [Fluid]  [Bat]  │  │                           │  │                           │
+│  12.5%     125Ω    Good   │  │                           │  │  [Ask Aura...     ][Send] │
+└───────────────────────────┘  └───────────────────────────┘  └───────────────────────────┘
+```
+
+### Feature Deep-Dive
+
+| Workflow | Primary Capabilities | Clinical & Engineering Rationale |
+| :--- | :--- | :--- |
+| **1. Telemetry Dashboard** | Live heart rate stream, dynamic safe zone ring, daily clinical guidance, thoracic impedance fluid status, pacing %, battery life. | Translates complex device telemetry into a reassuring, actionable visual summary. Automatically detects fluid accumulation drops (<110 Ω). |
+| **2. 7-Day Trend History** | Multi-series SVG charts powered by `victory-native`: weekly HR averages, pacing burden %, and daily AFib burden with dynamic threshold color-switching. | Allows patients and electrophysiologists to visualize trends over time, distinguishing acute drift from normal day-to-day variance. |
+| **3. AI Coach & Chat** | Context-aware LLM heuristics, care appointment reminders, dietary goals, quick suggestion chips, and **Priority 0 acute symptom triage**. | Provides immediate, reassuring answers to daily lifestyle questions while maintaining absolute clinical safety guardrails. |
+| **4. Ecosystem Health Sync** | Bidirectional synchronization with Apple Health (iOS) and Google Health Connect (Android), gated by authenticated user identity. | Cross-verifies consumer smartwatch heart rate against CRM device rate limits to detect sensor discrepancies and arrhythmia triggers. |
 
 ---
 
@@ -85,7 +138,7 @@ Aura AI Coach bridges consumer wearables with clinical CRM telemetry through a s
 ```mermaid
 flowchart TD
     User["Patient / User"] --> Trigger["Tap 'Connect Health Sync'"]
-    Trigger --> Modal["HealthAccountModal"]
+    Trigger --> Modal["HealthAccountModal.tsx"]
     
     Modal -->|iOS Runtime| Apple["Sign in with Apple (Apple ID / iCloud)"]
     Modal -->|Android Runtime| Google["Sign in with Google (Google Account)"]
@@ -105,70 +158,18 @@ flowchart TD
     Baseline --> AI["HealthAIEngine (Wearable vs. CRM Cross-Verification)"]
 ```
 
-### Entitlements & Permissions Configured:
+### Native Entitlements & Permissions Configured:
 - **iOS (`app.json`):**
   - Entitlement: `com.apple.developer.healthkit`
   - Usage descriptions: `NSHealthShareUsageDescription` and `NSHealthUpdateUsageDescription`
 - **Android (`app.json`):**
   - Manifest intent: `androidx.health.connect.client.HEALTH_CONNECT_ACTION`
   - Permissions: `android.permission.health.READ_HEART_RATE`, `android.permission.health.READ_STEPS`, `android.permission.health.READ_SLEEP`
-- **Testing & Simulation:** When running on simulators, web, or Expo Go without physical biometric sensors, the gateway provides high-fidelity simulated telemetry tagged as `'Simulated Platform'`.
+- **Simulation Fallbacks:** When running on simulators, web, or CI runners without physical biometric sensors, the gateway provides high-fidelity simulated telemetry tagged as `'Simulated Platform'`.
 
 ---
 
-## 🛠️ Tech Stack
-
-- **Mobile Framework:** [Expo SDK 55](https://expo.dev) with [React Native 0.83.2](https://reactnative.dev)
-- **Language:** TypeScript 5.9 (Strict mode enabled)
-- **Navigation:** [React Navigation 7](https://reactnavigation.org) (Bottom Tabs)
-- **Data Visualization:** `victory-native` & `react-native-svg`
-- **Icons & Styling:** `@expo/vector-icons` (Ionicons), custom design system tokens
-- **Quality & Testing:** Jest 29, `ts-jest`, ESLint 9 (Flat Config), `@typescript-eslint`
-- **CI/CD:** GitHub Actions (Lint, Typecheck, Test Coverage, Gitleaks, npm Audit)
-
----
-
-## 🚀 Getting Started
-
-### Prerequisites
-
-- Node.js 20+ or 22 LTS (`node --version`)
-- npm 10+ (`npm --version`)
-- iOS Simulator (macOS with Xcode) or Android Emulator (Android Studio)
-
-### Installation
-
-```bash
-# 1. Clone the repository
-git clone https://github.com/hoomanp/aura-ai-coach.git
-cd aura-ai-coach
-
-# 2. Copy environment configuration
-cp .env.example .env
-
-# 3. Install dependencies (audited with 0 vulnerabilities)
-npm install
-```
-
-### Development
-
-```bash
-# Start the Expo development server
-npm run start
-
-# Launch on iOS Simulator
-npm run ios
-
-# Launch on Android Emulator
-npm run android
-
-# Start in God Mode (preloaded demo data for instant evaluation)
-APP_ENV=demo npm run start
-```
-
----
-
-## 🧪 TDD Architecture & Feature Verification Suite
+## 🧪 TDD Architecture & Staff STE Verification Suite
 
 As part of the **TDD Architect & CRM Subject Matter Expert (SME)** verification framework, **every single feature, component, screen, and service across the codebase is covered by at least 1 dedicated test suite**:
 
@@ -220,6 +221,58 @@ npm run test:coverage
 - **Subclinical Fluid Decompensation:** Day 2 thoracic impedance decline (<110 Ω) accurately triggering early fluid warnings before clinical decompensation.
 - **Memory & Pruning Stability:** Rolling 24-hour window retention (`HealthAIEngine.purgeOldTelemetry`) verifying that memory does not leak over extended continuous telemetry acquisition.
 - **Emergency Triage Guardrails:** Urgent symptom recognition ("chest pain", "passed out", "ICD shock") overriding standard chat responses to prompt immediate 911 contact.
+
+---
+
+## 🛠️ Technology Stack & Engineering Standards
+
+- **Mobile Framework:** [Expo SDK 55](https://expo.dev) with [React Native 0.83.2](https://reactnative.dev)
+- **Language:** TypeScript 5.9 (Strict mode enabled)
+- **Navigation:** [React Navigation 7](https://reactnavigation.org) (Bottom Tabs)
+- **Data Visualization:** `victory-native` & `react-native-svg`
+- **Icons & Styling:** `@expo/vector-icons` (Ionicons), custom design system tokens
+- **Quality & Testing:** Jest 29, `ts-jest`, ESLint 9 (Flat Config), `@typescript-eslint`
+- **CI/CD:** GitHub Actions (Lint, Typecheck, Test Coverage, Gitleaks, npm Audit)
+
+---
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+- Node.js 20+ or 22 LTS (`node --version`)
+- npm 10+ (`npm --version`)
+- iOS Simulator (macOS with Xcode) or Android Emulator (Android Studio)
+
+### Installation
+
+```bash
+# 1. Clone the repository
+git clone https://github.com/hoomanp/aura-ai-coach.git
+cd aura-ai-coach
+
+# 2. Copy environment configuration
+cp .env.example .env
+
+# 3. Install dependencies (audited with 0 vulnerabilities)
+npm install
+```
+
+### Development
+
+```bash
+# Start the Expo development server
+npm run start
+
+# Launch on iOS Simulator
+npm run ios
+
+# Launch on Android Emulator
+npm run android
+
+# Start in God Mode (preloaded demo data for instant evaluation)
+APP_ENV=demo npm run start
+```
 
 ---
 
@@ -306,9 +359,21 @@ aura-ai-coach/
 
 ---
 
+## 👨‍💻 Author & Engineering Leadership
+
+**Architected & Engineered by [Hooman Parta](https://github.com/hoomanp)**  
+*Staff Software Test Engineer & MedTech Systems Architect*
+
+> *"Building software for medical devices requires a different standard of engineering. It demands that testability, zero-trust security, and clinical hazard controls be designed into the foundational architecture—not bolted on after the fact. Aura AI Coach is a testament to how modern consumer mobile technologies can meet clinical-grade quality standards."*
+
+- **GitHub:** [@hoomanp](https://github.com/hoomanp)
+- **Repository:** [https://github.com/hoomanp/aura-ai-coach](https://github.com/hoomanp/aura-ai-coach)
+
+---
+
 ## 🤝 Contributing & License
 
-Contributions, feature requests, and bug reports are welcome! Please read [CONTRIBUTING.md](CONTRIBUTING.md) and [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) before opening a pull request.
+Contributions, feature requests, and discussions are welcome! Please review [CONTRIBUTING.md](CONTRIBUTING.md) and [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) before opening a pull request.
 
 Released under the [MIT License](LICENSE).  
 Copyright © 2026 Hooman Parta and Contributors.
