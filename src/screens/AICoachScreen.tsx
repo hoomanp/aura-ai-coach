@@ -69,7 +69,7 @@ export function AICoachScreen() {
         <View style={styles.header}>
           <Text style={Typography.h1}>Aura AI Coach</Text>
           <Text style={[Typography.caption, { marginTop: 4 }]}>
-            Powered by Abbott\u00AE Merlin.net\u2122
+            Powered by Abbott® Merlin.net™
           </Text>
         </View>
 

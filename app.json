@@ -16,7 +16,7 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.abbott.aura-ai-coach",
+      "bundleIdentifier": "com.hoomanparta.aura-ai-coach",
       "buildNumber": "1.0.0",
       "infoPlist": {
         "NSBluetoothAlwaysUsageDescription": "Aura AI requires Bluetooth access to securely sync with your Abbott® CRM device for real-time heart health monitoring.",
@@ -34,7 +34,7 @@
         "foregroundImage": "./assets/android-icon-foreground.png",
         "backgroundColor": "#00A9E0"
       },
-      "package": "com.abbott.crm.aura",
+      "package": "com.hoomanparta.aura",
       "versionCode": 1,
       "permissions": [
         "BLUETOOTH",
@@ -55,6 +55,9 @@
         "projectId": "f43c85eb-947b-4272-bd90-9834a8f8dcf4"
       }
     },
-    "owner": "hoomanpartas-organization"
+    "owner": "hoomanpartas-organization",
+    "plugins": [
+      "expo-font"
+    ]
   }
 }

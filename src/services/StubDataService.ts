@@ -8,7 +8,11 @@ export interface DemoState {
 
 export class StubDataService {
   static isDemoMode(): boolean {
-    return process.env.APP_ENV === 'demo';
+    // Expo only inlines EXPO_PUBLIC_* variables into device bundles
+    // (babel-preset-expo's expoInlineEnvVars plugin). Plain APP_ENV is visible
+    // to Node-side tooling only (Jest, CI, EAS build scripts), so prefer the
+    // public variable and fall back for Node contexts.
+    return (process.env.EXPO_PUBLIC_APP_ENV || process.env.APP_ENV) === 'demo';
   }
 
   static getDemoState(): DemoState {

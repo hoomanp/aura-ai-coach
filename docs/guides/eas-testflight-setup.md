@@ -2,7 +2,7 @@
 
 One-time setup to get Aura AI Coach building and distributing to iOS devices via TestFlight.
 
-**Bundle identifier:** `com.abbott.aura-ai-coach`
+**Bundle identifier:** `com.hoomanparta.aura-ai-coach`
 
 ---
 
@@ -62,7 +62,7 @@ eas credentials --platform ios
 Choose **"Add a new provisioning profile"** when prompted. EAS will walk you through:
 
 1. **Apple ID login** — EAS opens a browser to authenticate with Apple
-2. **Bundle identifier registration** — EAS registers `com.abbott.aura-ai-coach` in your Apple Developer portal automatically
+2. **Bundle identifier registration** — EAS registers `com.hoomanparta.aura-ai-coach` in your Apple Developer portal automatically
 3. **Distribution certificate** — EAS creates or reuses an existing iOS Distribution Certificate
 4. **Provisioning profile** — EAS creates an **Ad Hoc** profile for internal TestFlight distribution
 
@@ -76,7 +76,7 @@ HealthKit must be manually enabled (EAS cannot do this automatically):
 
 1. Go to [developer.apple.com/account](https://developer.apple.com/account)
 2. Navigate to **Certificates, Identifiers & Profiles → Identifiers**
-3. Find `com.abbott.aura-ai-coach`
+3. Find `com.hoomanparta.aura-ai-coach`
 4. Scroll to **Capabilities** and enable **HealthKit**
 5. Save
 
@@ -91,7 +91,7 @@ eas build --platform ios --profile demo
 ```
 
 This will:
-- Bundle the app with `APP_ENV=demo`
+- Bundle the app with `EXPO_PUBLIC_APP_ENV=demo` (the `demo` EAS profile in `eas.json` sets it alongside `APP_ENV`)
 - Sign it with your Ad Hoc profile
 - Upload the `.ipa` to Expo's build servers (takes ~10–15 minutes)
 - Automatically submit to TestFlight when done

@@ -7,11 +7,11 @@
 [![Tests: 130/130 Passing](https://img.shields.io/badge/Tests-130%2F130%20Passing-brightgreen.svg)](https://github.com/hoomanp/aura-ai-coach)
 [![Test Suites: 21/21](https://img.shields.io/badge/Test%20Suites-21%2F21%20Passing-brightgreen.svg)](https://github.com/hoomanp/aura-ai-coach)
 [![MCP: 2024-11-05](https://img.shields.io/badge/MCP-Server%20%26%20Client-blueviolet.svg)](https://modelcontextprotocol.io)
-[![Coverage: 98% Services | 95% AI](https://img.shields.io/badge/Coverage-98%25%20Services-brightgreen.svg)](https://github.com/hoomanp/aura-ai-coach)
-[![Vulnerabilities: 0](https://img.shields.io/badge/Vulnerabilities-0-brightgreen.svg)](https://github.com/hoomanp/aura-ai-coach)
+[![Coverage: 96% Services | 95% AI](https://img.shields.io/badge/Coverage-96%25%20Services%20%7C%2095%25%20AI-brightgreen.svg)](https://github.com/hoomanp/aura-ai-coach)
+[![npm audit: 0 Critical](https://img.shields.io/badge/npm%20audit-0%20Critical%20%7C%202%20upstream%20unfixed-brightgreen.svg)](SECURITY.md)
 [![TypeScript: Strict](https://img.shields.io/badge/TypeScript-Strict-blue.svg)](tsconfig.json)
 [![Expo: SDK 55](https://img.shields.io/badge/Expo-SDK%2055-black.svg)](https://expo.dev)
-[![React Native: 0.83](https://img.shields.io/badge/React%20Native-0.83.2-61dafb.svg)](https://reactnative.dev)
+[![React Native: 0.83](https://img.shields.io/badge/React%20Native-0.83.10-61dafb.svg)](https://reactnative.dev)
 
 ---
 
@@ -52,7 +52,7 @@ Engineering software in the cardiac domain requires strict compliance with inter
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │                             Aura Mobile Client                              │
-│            (Expo SDK 55 · React Native 0.83.2 · TypeScript Strict)          │
+│            (Expo SDK 55 · React Native 0.83.10 · TypeScript Strict)          │
 │                                                                             │
 │   ┌──────────────────┐   ┌──────────────────┐   ┌───────────────────────┐   │
 │   │ Telemetry Dash   │   │  7-Day Analytics │   │    AI Coach & Chat    │   │
@@ -219,7 +219,7 @@ A stdio CLI transport runner is provided at `src/mcp/server-cli.ts`. To connect 
   "mcpServers": {
     "aura-ai-coach": {
       "command": "npm",
-      "args": ["run", "mcp:server"],
+      "args": ["run", "--silent", "mcp:server"],
       "cwd": "/path/to/aura-ai-coach"
     }
   }
@@ -273,11 +273,11 @@ npm run test:coverage
 | **Services** | Remote Merlin.net Gateway | [`src/services/MerlinNetService.test.ts`](src/services/MerlinNetService.test.ts) | 3 | FHIR input sanitization, bounds checking, pacing limits |
 | **Services** | Health Ecosystem Gateway | [`src/services/HealthPlatformService.test.ts`](src/services/HealthPlatformService.test.ts) | 12 | Apple ID, Google Account, permission gating, baseline activity |
 | **Services** | Security & Input Hygiene | [`src/services/SecuritySanitization.test.ts`](src/services/SecuritySanitization.test.ts) | 13 | Patient ID injection prevention, special char stripping |
-| **Services** | Deterministic God Mode | [`src/services/StubDataService.test.ts`](src/services/StubDataService.test.ts) | 20 | Mock telemetry, patient profiles, 7-day history generation |
+| **Services** | Deterministic God Mode | [`src/services/StubDataService.test.ts`](src/services/StubDataService.test.ts) | 15 | Mock telemetry, patient profiles, 7-day history generation |
 | **Services** | 48-Hour Continuous Sim | [`src/services/TelemetrySimulation2Day.test.ts`](src/services/TelemetrySimulation2Day.test.ts) | 6 | Diurnal curves, Day-2 fluid decompensation (<110 Ω), memory pruning |
 | **Services** | End-to-End Integration | [`src/verification_flow.test.ts`](src/verification_flow.test.ts) | 2 | Full patient onboarding, BLE handshake, multi-source sync |
-| **AI** | Emergency Clinical Triage | [`src/ai/HealthAIEngine.emergency.test.ts`](src/ai/HealthAIEngine.emergency.test.ts) | 11 | Priority 0 symptom keywords (chest pain, shock, syncope) -> 911 |
-| **AI** | Clinical Heuristics Engine | [`src/ai/HealthAIEngine.test.ts`](src/ai/HealthAIEngine.test.ts) | 14 | Safe zones, fluid alerts, coaching insights, 24h data pruning |
+| **AI** | Emergency Clinical Triage | [`src/ai/HealthAIEngine.emergency.test.ts`](src/ai/HealthAIEngine.emergency.test.ts) | 13 | Priority 0 symptom keywords (chest pain, shock, syncope) -> 911 |
+| **AI** | Clinical Heuristics Engine | [`src/ai/HealthAIEngine.test.ts`](src/ai/HealthAIEngine.test.ts) | 17 | Safe zones, fluid alerts, coaching insights, 24h data pruning |
 | **MCP** | Aura MCP Server | [`src/mcp/AuraMCPServer.test.ts`](src/mcp/AuraMCPServer.test.ts) | 9 | Protocol handshake (2024-11-05), tools, resources, prompts, emergency triage |
 | **MCP** | Aura MCP Client | [`src/services/MCPClientService.test.ts`](src/services/MCPClientService.test.ts) | 14 | Connect, HTTP & in-memory transports, tool invocation, session lifecycle |
 | **Design** | Design System & Disclaimers | [`src/theme/Theme.test.ts`](src/theme/Theme.test.ts) | 4 | Colors, 4pt spacing scale, typography, legal disclaimers |
@@ -297,7 +297,7 @@ npm run test:coverage
 
 ## 🛠️ Technology Stack & Engineering Standards
 
-- **Mobile Framework:** [Expo SDK 55](https://expo.dev) with [React Native 0.83.2](https://reactnative.dev)
+- **Mobile Framework:** [Expo SDK 55](https://expo.dev) with [React Native 0.83.10](https://reactnative.dev)
 - **Language:** TypeScript 5.9 (Strict mode enabled)
 - **Navigation:** [React Navigation 7](https://reactnavigation.org) (Bottom Tabs)
 - **Data Visualization:** `victory-native` & `react-native-svg`
@@ -325,7 +325,7 @@ cd aura-ai-coach
 # 2. Copy environment configuration
 cp .env.example .env
 
-# 3. Install dependencies (audited with 0 vulnerabilities)
+# 3. Install dependencies (0 critical vulnerabilities — audit posture in SECURITY.md)
 npm install
 ```
 
@@ -342,7 +342,7 @@ npm run ios
 npm run android
 
 # Start in God Mode (preloaded demo data for instant evaluation)
-APP_ENV=demo npm run start
+EXPO_PUBLIC_APP_ENV=demo npm run start
 ```
 
 ---
@@ -382,6 +382,7 @@ aura-ai-coach/
 │   │   ├── types.ts                      # MCP 2024-11-05 & JSON-RPC 2.0 type definitions
 │   │   ├── AuraMCPServer.ts              # Cardiac MCP Server (5 tools, 3 resources, 2 prompts)
 │   │   ├── AuraMCPServer.test.ts         # MCP Server unit test suite (9 tests)
+│   │   ├── react-native-stub.ts          # Node.js Platform stand-in for the headless MCP CLI
 │   │   └── server-cli.ts                 # Stdio CLI runner for Claude Desktop & Cursor
 │   ├── models/
 │   │   └── health.ts            # Type definitions: Telemetry, Pacing, UserAccount
@@ -419,6 +420,7 @@ aura-ai-coach/
 ├── jest.config.js               # Jest configuration
 ├── package.json                 # Project dependencies & scripts
 ├── tsconfig.json                # TypeScript strict configuration
+├── tsconfig.mcp.json             # Scoped config: aliases react-native to a Node stub for the MCP CLI
 ├── DISCLAIMER.md                # Medical device & trademark disclaimer
 ├── SECURITY.md                  # Vulnerability disclosure policy
 ├── CONTRIBUTING.md              # Contributor guidelines & standards
@@ -433,7 +435,7 @@ aura-ai-coach/
 - **Zero Tracked Credentials:** `credentials/` and `credentials.json` are excluded in `.gitignore`. A safe template is provided in `credentials.example.json`.
 - **Gitleaks CI Scanning:** Automated pre-commit and CI scans prevent accidental secret leaks.
 - **Sanitized Inputs:** Patient identifiers are sanitized to alphanumeric characters (`[a-zA-Z0-9-]`) across all network services to eliminate injection attack vectors.
-- **Dependency Audit:** Zero npm vulnerabilities via package overrides (`image-size`, `uuid`) and `npm audit`.
+- **Dependency Audit:** CI enforces `npm audit --audit-level=critical` (zero critical findings). Two high-severity advisories in upstream toolchain dependencies currently have **no patched release available** — both are triaged with exposure analysis in [SECURITY.md](SECURITY.md).
 
 ---
 

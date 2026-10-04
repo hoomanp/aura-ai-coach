@@ -151,7 +151,7 @@ export function DashboardScreen() {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color={Colors.primary} />
-        <Text style={styles.loadingText}>Syncing Merlin.net\u2122 Data...</Text>
+        <Text style={styles.loadingText}>Syncing Merlin.net™ Data...</Text>
       </View>
     );
   }
@@ -162,7 +162,7 @@ export function DashboardScreen() {
 
         <View style={styles.header}>
           <View>
-            <Text style={Typography.caption}>Aura AI for Abbott\u00AE</Text>
+            <Text style={Typography.caption}>Aura AI for Abbott®</Text>
             <Text style={Typography.h1}>{userAccount?.displayName ?? PatientProfile.name}</Text>
           </View>
           <View style={styles.connectionBadgeContainer}>
@@ -204,7 +204,7 @@ export function DashboardScreen() {
               style={[styles.actionButton, { backgroundColor: Colors.primary, marginTop: Spacing.m }]}
               onPress={syncAura}
             >
-              <Text style={styles.actionButtonText}>Sync myMerlinPulse\u2122 Device</Text>
+              <Text style={styles.actionButtonText}>Sync myMerlinPulse™ Device</Text>
             </TouchableOpacity>
           )}
         </View>
@@ -292,7 +292,7 @@ export function DashboardScreen() {
           </View>
           <View style={styles.statBox}>
             <Text style={Typography.caption}>Fluid (Imp)</Text>
-            <Text style={Typography.h2}>{telemetry.thoracicImpedance}\u03A9</Text>
+            <Text style={Typography.h2}>{telemetry.thoracicImpedance}Ω</Text>
           </View>
           <View style={styles.statBox}>
             <Text style={Typography.caption}>Battery</Text>

@@ -1,6 +1,6 @@
 # Dependencies
 node_modules/
-package-lock\ 2.json
+package-lock 2.json
 
 # Expo & Build artifacts
 .expo/
@@ -35,9 +35,10 @@ npm-debug.*
 yarn-debug.*
 yarn-error.*
 
-# OS
+# OS & Local Tooling
 .DS_Store
 Thumbs.db
+.freebuff/
 
 # TypeScript
 *.tsbuildinfo

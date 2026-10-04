@@ -24,7 +24,7 @@ Thank you for your interest in contributing to **Aura AI Coach**! We welcome ope
 
 4. **Run the development server in Demo Mode:**
    ```bash
-   APP_ENV=demo npx expo start
+   EXPO_PUBLIC_APP_ENV=demo npx expo start
    ```
 
 ## Pull Request Guidelines

@@ -6,7 +6,8 @@
         "simulator": false
       },
       "env": {
-        "APP_ENV": "demo"
+        "APP_ENV": "demo",
+        "EXPO_PUBLIC_APP_ENV": "demo"
       }
     },
     "test-drive": {

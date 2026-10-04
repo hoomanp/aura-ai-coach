@@ -35,7 +35,7 @@ export function HistoryScreen() {
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
         <View style={styles.header}>
           <Text style={Typography.h1}>7-Day History</Text>
-          <Text style={[Typography.caption, { marginTop: 4 }]}>Abbott\u00AE CRM Telemetry</Text>
+          <Text style={[Typography.caption, { marginTop: 4 }]}>Abbott® CRM Telemetry</Text>
         </View>
 
         <TrendChart
